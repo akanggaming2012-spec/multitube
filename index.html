@@ -1,10 +1,10 @@
-j<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="MultiTube - Nonton video dewasa gratis Pornhub, XNXX, XVideos, xHamster terbaru HD 2026"/>
-  <title>MultiTube - Nonton Video Dewasa Gratis Terbaru</title>
+  <meta name="description" content="MultiTube - Nonton video dewasa gratis dari Pornhub, XNXX, XVideos terbaru HD"/>
+  <title>MultiTube - Nonton Video Dewasa Gratis</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
@@ -28,14 +28,9 @@ j<!DOCTYPE html>
     </div>
   </header>
 
-  <!-- ADSTERRA CONTAINER -->
-  <div id="adsterra-container"></div>
-
   <main class="max-w-7xl mx-auto px-4 py-8">
     <h2 class="text-2xl font-semibold mb-6 text-center">🔥 Trending Video</h2>
-    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <!-- Video cards -->
-    </div>
+    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
   </main>
 
   <footer class="text-center py-10 text-zinc-500 text-sm border-t border-zinc-800">
@@ -45,23 +40,13 @@ j<!DOCTYPE html>
   <script>
     const API_BASE = "https://multitube-api.onrender.com";
 
-    function injectAdsterra() {
-      // GANTI DENGAN KODE ADSTERRA KAMU DI SINI
-      console.log("%c Adsterra Ready - Ganti kode popunder di sini", "color: orange");
-    }
-
-    async function loadVideos(query = "trending", site = "pornhub") {
+    async function loadVideos(query = "trending") {
       const container = document.getElementById('results');
       container.innerHTML = `<p class="col-span-full text-center py-12">Memuat video...</p>`;
 
       try {
-        const res = await fetch(`${API_BASE}/${site}/search?key=${encodeURIComponent(query)}`);
+        const res = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
         const data = await res.json();
-
-        if (!data.success || !data.data?.videos?.length) {
-          container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Video tidak ditemukan</p>`;
-          return;
-        }
 
         container.innerHTML = data.data.videos.map(v => `
           <div onclick="window.open('${v.link || v.url}', '_blank')" class="video-card bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
@@ -83,10 +68,7 @@ j<!DOCTYPE html>
       if (e.key === 'Enter') loadVideos(e.target.value.trim());
     });
 
-    window.onload = () => {
-      loadVideos("trending");
-      injectAdsterra();
-    };
+    window.onload = () => loadVideos("trending");
   </script>
 </body>
 </html>
