@@ -34,3 +34,32 @@
   </main>
 
   <footer class="text-center py-10 text-zinc-500 text-sm border-t border-zinc-800">
+    Powered by Lustpress • MultiTube 2026
+  </footer>
+
+  <script>
+    const API_BASE = "https://multitube-api.onrender.com";
+
+    async function loadVideos(query = "milf") {
+      const container = document.getElementById('results');
+      container.innerHTML = `<p class="col-span-full text-center py-12 text-zinc-400">Memuat video dari Pornhub...</p>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        console.log("API Response:", data); // Untuk debugging
+
+        if (!data.success || !data.data?.videos || data.data.videos.length === 0) {
+          container.innerHTML = `<p class="col-span-full text-center py-12 text-yellow-400">Tidak ada video ditemukan. Coba kata lain.</p>`;
+          return;
+        }
+
+        container.innerHTML = data.data.videos.map(v => `
+          <div onclick="window.open('${v.link || v.url}', '_blank')" class="video-card bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
+            <div class="relative">
+              <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover" alt="${v.title}">
+              <div class="absolute bottom-1 right-1 bg-black/70 text-xs px-2 py-1 rounded">${v.duration || ''}</div>
+            </div>
+            <div class="p-3">
+              <h3 class="line-clamp-2 text-sm font-medium">${v.title}</h3
