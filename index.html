@@ -3,72 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MultiTube - Nonton Video Dewasa Gratis</title>
+  <title>MultiTube</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="bg-black text-white min-h-screen p-4">
 
-  <header class="bg-black p-4 border-b border-zinc-800">
-    <div class="flex items-center gap-3">
-      <h1 class="text-3xl font-bold text-pink-500">MULTITUBE</h1>
-      <input id="searchInput" type="text" 
-             class="flex-1 bg-zinc-900 border border-zinc-700 rounded-full py-3 px-5"
-             placeholder="Cari video... (milf, indo, hentai)">
-    </div>
-  </header>
+  <h1 class="text-4xl font-bold text-pink-500 mb-6 text-center">MULTITUBE</h1>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <div class="flex justify-between mb-4">
-      <h2 class="text-xl font-semibold">🔥 Trending Video</h2>
-      <button onclick="loadVideos()" class="text-pink-500 text-sm">↻ Refresh</button>
-    </div>
-    <div id="results" class="grid grid-cols-2 gap-4"></div>
-  </main>
+  <input id="searchInput" type="text" 
+         class="w-full bg-zinc-900 border border-zinc-700 rounded-full py-4 px-6 mb-6"
+         placeholder="Cari video... (milf, indo, hentai)">
 
-  <footer class="text-center py-8 text-zinc-500 text-xs">
-    Powered by Lustpress • MultiTube 2026
-  </footer>
+  <h2 class="text-xl mb-4">🔥 Trending Video</h2>
+  <div id="results" class="grid grid-cols-2 gap-4"></div>
 
   <script>
-    const API_BASE = "https://multitube-api.onrender.com";
+    const API = "https://multitube-api.onrender.com";
 
-    async function loadVideos(query = "indo") {
-      const container = document.getElementById('results');
-      container.innerHTML = `<p class="col-span-full text-center py-20">Memuat video...</p>`;
+    async function cari(query = "milf") {
+      const hasil = document.getElementById('results');
+      hasil.innerHTML = "<p class='text-center py-10'>Memuat...</p>";
 
       try {
-        const res = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
+        const res = await fetch(`${API}/pornhub/search?key=${query}`);
         const data = await res.json();
 
         let videos = data.data?.videos || data.videos || [];
 
         if (videos.length === 0) {
-          container.innerHTML = `<p class="col-span-full text-center py-20 text-yellow-400">Tidak ada video.<br>Coba kata lain</p>`;
+          hasil.innerHTML = "<p class='text-center py-10 text-yellow-400'>Tidak ada video.<br>Coba kata lain</p>";
           return;
         }
 
-        let html = '';
+        let html = "";
         videos.forEach(v => {
           html += `
-            <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
-              <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover">
+            <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-2xl overflow-hidden">
+              <img src="${v.image || v.thumbnail}" class="w-full h-40 object-cover">
               <div class="p-3">
                 <p class="text-sm line-clamp-2">${v.title}</p>
               </div>
             </div>
           `;
         });
-        container.innerHTML = html;
-      } catch (e) {
-        container.innerHTML = `<p class="col-span-full text-center py-20 text-red-400">Gagal memuat.<br>Klik Refresh</p>`;
+        hasil.innerHTML = html;
+      } catch(e) {
+        hasil.innerHTML = "<p class='text-center py-10 text-red-400'>Gagal memuat video</p>";
       }
     }
 
     document.getElementById('searchInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') loadVideos(e.target.value.trim() || "indo");
+      if (e.key === "Enter") cari(e.target.value || "milf");
     });
 
-    window.onload = () => loadVideos("indo");
+    window.onload = () => cari("indo");
   </script>
 </body>
 </html>
