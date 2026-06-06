@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="MultiTube - Nonton video dewasa gratis Pornhub, XNXX, XVideos terbaru HD tanpa iklan mengganggu." />
+  <title>MultiTube - Nonton Video Dewasa Gratis Terbaru</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+
+  <style>
+    body { font-family: system-ui, sans-serif; }
+    .video-card { transition: all 0.3s; }
+    .video-card:hover { transform: scale(1.04); }
+    .ad-slot { min-height: 100px; background: #111827; border: 1px dashed #4b5563; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+  <!-- HEADER -->
+  <header class="bg-black sticky top-0 z-50 border-b border-zinc-800">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-pink-500">MULTITUBE</h1>
+        <input id="searchInput" type="text" 
+               class="flex-1 max-w-xl mx-4 bg-zinc-900 border border-zinc-700 rounded-full py-3 px-6 text-base"
+               placeholder="Cari video dewasa (milf, indo, hentai...)">
+      </div>
+    </div>
+  </header>
+
+  <!-- ADSTERRA CONTAINER (Anti AdBlock) -->
+  <div id="adsterra-container"></div>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <h2 class="text-2xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+      🔥 Trending Video Hari Ini
+    </h2>
+    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <!-- Video cards akan muncul di sini -->
+    </div>
+  </main>
+
+  <footer class="text-center py-8 text-zinc-500 text-sm border-t border-zinc-800">
+    Powered by Lustpress • MultiTube 2026
+  </footer>
+
+  <script>
+    const API_BASE = "https://multitube-api.onrender.com";
+
+    // === ANTI ADBLOCK FUNCTION ===
+    function injectAdsterra() {
+      const container = document.getElementById('adsterra-container');
+      
+      // Popunder / Direct Link (GANTI DENGAN KODE ADSTERRA KAMU)
+      const popunderCode = document.createElement('script');
+      popunderCode.innerHTML = `
+        (function() {
+          // GANTI BAGIAN INI DENGAN KODE POPUNDER ADSTERRA KAMU
+          // Contoh:
+          // var adsterraPop = document.createElement('script');
+          // adsterraPop.src = 'https://adsterra.com/popunder-link-kamu';
+          // document.body.appendChild(adsterraPop);
+        })();
+      `;
+      container.appendChild(popunderCode);
+
+      // Banner fallback
+      setTimeout(() => {
+        const banner = document.createElement('div');
+        banner.className = 'ad-slot my-4 mx-auto max-w-4xl text-center text-xs text-zinc-500 py-4';
+        banner.innerHTML = '📢 Tempat Iklan - Support kami dengan klik iklan';
+        container.appendChild(banner);
+      }, 3000);
+    }
+
+    // Load Videos
+    async function loadVideos(query = "trending", site = "pornhub") {
+      const container = document.getElementById('results');
+      container.innerHTML = `<p class="col-span-full text-center py-12 text-zinc-400">Sedang memuat video...</p>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/${site}/search?key=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!data.success || !data.data?.videos) {
+          container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Video tidak ditemukan</p>`;
+          return;
+        }
+
+        container.innerHTML = data.data.videos.map(v => `
+          <div onclick="window.open('${v.link || v.url}', '_blank')" 
+               class="video-card bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
+            <div class="relative">
+              <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover" alt="${v.title}">
+              <div class="absolute bottom-1 right-1 bg-black/80 text-xs px-2 py-1 rounded">${v.duration || ''}</div>
+            </div>
+            <div class="p-3">
+              <h3 class="line-clamp-2 text-sm font-medium leading-tight">${v.title}</h3>
+              <p class="text-pink-400 text-xs mt-1">${site.toUpperCase()}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Gagal terhubung ke server</p>`;
+      }
+    }
+
+    // Search Event
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadVideos(this.value.trim());
+      }
+    });
+
+    // Initialize
+    window.onload = function() {
+      loadVideos("trending");
+      injectAdsterra();        // Load iklan
+    };
+  </script>
+</body>
+</html>
