@@ -13,17 +13,17 @@
     <div class="flex items-center justify-between max-w-7xl mx-auto">
       <h1 class="text-3xl font-bold text-pink-500">MULTITUBE</h1>
       <input id="searchInput" type="text" 
-             class="flex-1 max-w-md mx-4 bg-zinc-900 border border-zinc-700 rounded-full py-3 px-5 text-sm"
-             placeholder="Cari video (milf, indo, hentai...)">
+             class="flex-1 max-w-md mx-4 bg-zinc-900 border border-zinc-700 rounded-full py-3 px-5"
+             placeholder="Cari video... (milf, indo, hentai)">
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <h2 class="text-xl font-semibold mb-4 text-center">🔥 Trending Video</h2>
-    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold mb-6 text-center">🔥 Trending Video</h2>
+    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
   </main>
 
-  <footer class="text-center py-8 text-zinc-500 text-xs">
+  <footer class="text-center py-8 text-zinc-500 text-sm">
     Powered by Lustpress • MultiTube 2026
   </footer>
 
@@ -32,19 +32,26 @@
 
     async function loadVideos(query = "milf") {
       const container = document.getElementById('results');
-      container.innerHTML = `<p class="col-span-full text-center py-20 text-zinc-400">Memuat video...</p>`;
+      container.innerHTML = `<p class="col-span-full text-center py-12">Memuat video...</p>`;
 
       try {
-        const response = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
-        const data = await response.json();
+        const res = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
+        const data = await res.json();
 
-        if (!data.data || !data.data.videos || data.data.videos.length === 0) {
-          container.innerHTML = `<p class="col-span-full text-center py-20 text-yellow-400">Tidak ada video. Coba kata lain.</p>`;
+        console.log("Response dari API:", data); // Untuk debug
+
+        let videos = [];
+
+        if (data.data && data.data.videos) videos = data.data.videos;
+        else if (data.videos) videos = data.videos;
+
+        if (videos.length === 0) {
+          container.innerHTML = `<p class="col-span-full text-center py-12 text-yellow-400">Tidak ada video ditemukan.<br>Coba kata lain seperti "indo", "hentai", atau "japan"</p>`;
           return;
         }
 
         let html = '';
-        data.data.videos.forEach(v => {
+        videos.forEach(v => {
           html += `
             <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
               <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover" alt="${v.title}">
@@ -57,19 +64,17 @@
         });
         container.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p class="col-span-full text-center py-20 text-red-400">Gagal memuat video.<br><small>Coba refresh</small></p>`;
+        container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Gagal memuat video</p>`;
         console.error(err);
       }
     }
 
-    // Search
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    document.getElementById('searchInput').addEventListener('keypress', e => {
       if (e.key === 'Enter') {
         loadVideos(e.target.value.trim() || "milf");
       }
     });
 
-    // Load pertama
     window.onload = () => loadVideos("milf");
   </script>
 </body>
