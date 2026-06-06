@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="MultiTube - Nonton video dewasa gratis dari Pornhub, XNXX, XVideos terbaru HD"/>
+  <meta name="description" content="MultiTube - Nonton video dewasa gratis Pornhub, XNXX, XVideos"/>
   <title>MultiTube - Nonton Video Dewasa Gratis</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,41 +34,3 @@
   </main>
 
   <footer class="text-center py-10 text-zinc-500 text-sm border-t border-zinc-800">
-    Powered by Lustpress • MultiTube 2026
-  </footer>
-
-  <script>
-    const API_BASE = "https://multitube-api.onrender.com";
-
-    async function loadVideos(query = "trending") {
-      const container = document.getElementById('results');
-      container.innerHTML = `<p class="col-span-full text-center py-12">Memuat video...</p>`;
-
-      try {
-        const res = await fetch(`${API_BASE}/pornhub/search?key=${encodeURIComponent(query)}`);
-        const data = await res.json();
-
-        container.innerHTML = data.data.videos.map(v => `
-          <div onclick="window.open('${v.link || v.url}', '_blank')" class="video-card bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
-            <div class="relative">
-              <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover" alt="${v.title}">
-              <div class="absolute bottom-1 right-1 bg-black/70 text-xs px-2 py-1 rounded">${v.duration || ''}</div>
-            </div>
-            <div class="p-3">
-              <h3 class="line-clamp-2 text-sm font-medium">${v.title}</h3>
-            </div>
-          </div>
-        `).join('');
-      } catch (e) {
-        container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Gagal memuat video</p>`;
-      }
-    }
-
-    document.getElementById('searchInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') loadVideos(e.target.value.trim());
-    });
-
-    window.onload = () => loadVideos("trending");
-  </script>
-</body>
-</html>
