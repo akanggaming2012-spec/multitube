@@ -6,32 +6,36 @@
   <title>MultiTube</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white min-h-screen p-4">
+<body class="bg-black text-white">
 
-  <h1 class="text-4xl font-bold text-pink-500 mb-6 text-center">MULTITUBE</h1>
+  <div class="p-4">
+    <h1 class="text-4xl font-bold text-pink-500 mb-6">MULTITUBE</h1>
 
-  <input id="searchInput" type="text" 
-         class="w-full bg-zinc-900 border border-zinc-700 rounded-full py-4 px-6 mb-6"
-         placeholder="Cari video... (milf, indo, hentai)">
+    <input id="search" type="text" placeholder="Cari video... (indo, milf, hentai)" 
+           class="w-full bg-zinc-900 border border-zinc-700 rounded-full py-4 px-6 mb-6">
 
-  <h2 class="text-xl mb-4">🔥 Trending Video</h2>
-  <div id="results" class="grid grid-cols-2 gap-4"></div>
+    <button onclick="load()" class="bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-full mb-6">
+      🔄 Load Video
+    </button>
+
+    <div id="hasil" class="grid grid-cols-2 gap-4"></div>
+  </div>
 
   <script>
     const API = "https://multitube-api.onrender.com";
 
-    async function cari(query = "milf") {
-      const hasil = document.getElementById('results');
-      hasil.innerHTML = "<p class='text-center py-10'>Memuat...</p>";
+    async function load(q = "indo") {
+      const hasil = document.getElementById('hasil');
+      hasil.innerHTML = "<p class='text-center py-10'>Memuat video...</p>";
 
       try {
-        const res = await fetch(`${API}/pornhub/search?key=${query}`);
-        const data = await res.json();
+        const r = await fetch(`${API}/pornhub/search?key=${q}`);
+        const d = await r.json();
 
-        let videos = data.data?.videos || data.videos || [];
+        let videos = d.data?.videos || d.videos || [];
 
         if (videos.length === 0) {
-          hasil.innerHTML = "<p class='text-center py-10 text-yellow-400'>Tidak ada video.<br>Coba kata lain</p>";
+          hasil.innerHTML = "<p class='text-center py-10 text-yellow-400'>Tidak ada video. Coba kata lain.</p>";
           return;
         }
 
@@ -39,24 +43,21 @@
         videos.forEach(v => {
           html += `
             <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-2xl overflow-hidden">
-              <img src="${v.image || v.thumbnail}" class="w-full h-40 object-cover">
-              <div class="p-3">
-                <p class="text-sm line-clamp-2">${v.title}</p>
-              </div>
-            </div>
-          `;
+              <img src="${v.image || v.thumbnail}" class="w-full h-44 object-cover">
+              <div class="p-3 text-sm">${v.title}</div>
+            </div>`;
         });
         hasil.innerHTML = html;
       } catch(e) {
-        hasil.innerHTML = "<p class='text-center py-10 text-red-400'>Gagal memuat video</p>";
+        hasil.innerHTML = "<p class='text-center py-10 text-red-400'>Gagal memuat</p>";
       }
     }
 
-    document.getElementById('searchInput').addEventListener('keypress', e => {
-      if (e.key === "Enter") cari(e.target.value || "milf");
+    document.getElementById('search').addEventListener('keypress', e => {
+      if (e.key === "Enter") load(e.target.value || "indo");
     });
 
-    window.onload = () => cari("indo");
+    window.onload = () => load("indo");
   </script>
 </body>
 </html>
