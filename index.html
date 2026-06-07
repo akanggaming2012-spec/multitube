@@ -3,61 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MultiTube</title>
+  <title>MultiTube - Video Dewasa Gratis</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white">
+<body class="bg-zinc-950 text-white min-h-screen">
 
-  <div class="p-4">
-    <h1 class="text-4xl font-bold text-pink-500 mb-6">MULTITUBE</h1>
+  <header class="bg-black p-4 border-b border-zinc-800">
+    <div class="max-w-7xl mx-auto flex items-center gap-3">
+      <h1 class="text-3xl font-bold text-pink-500">MULTITUBE</h1>
+      <input id="searchInput" type="text" 
+             class="flex-1 bg-zinc-900 border border-zinc-700 rounded-full py-4 px-6"
+             placeholder="Cari video... (indo, milf, hentai)">
+    </div>
+  </header>
 
-    <input id="search" type="text" placeholder="Cari video... (indo, milf, hentai)" 
-           class="w-full bg-zinc-900 border border-zinc-700 rounded-full py-4 px-6 mb-6">
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold">🔥 Trending Video</h2>
+      <button onclick="loadVideos()" class="text-pink-500">↻ Refresh</button>
+    </div>
+    <div id="results" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+  </main>
 
-    <button onclick="load()" class="bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-full mb-6">
-      🔄 Load Video
-    </button>
-
-    <div id="hasil" class="grid grid-cols-2 gap-4"></div>
-  </div>
+  <footer class="text-center py-8 text-zinc-500 text-sm">
+    Powered by Lustpress • MultiTube 2026
+  </footer>
 
   <script>
-    const API = "https://multitube-api.onrender.com";
+    const API_BASE = "https://multitube-api.onrender.com";
 
-    async function load(q = "indo") {
-      const hasil = document.getElementById('hasil');
-      hasil.innerHTML = "<p class='text-center py-10'>Memuat video...</p>";
+    async function loadVideos(query = "indo") {
+      const container = document.getElementById('results');
+      container.innerHTML = `<p class="col-span-full text-center py-12">Memuat video...</p>`;
 
-      try {
-        const r = await fetch(`${API}/pornhub/search?key=${q}`);
-        const d = await r.json();
+      const proxies = [
+        '', 
+        'https://corsproxy.io/?',
+        'https://api.allorigins.win/raw?url='
+      ];
 
-        let videos = d.data?.videos || d.videos || [];
+      for (let proxy of proxies) {
+        try {
+          const url = proxy ? proxy + encodeURIComponent(`${API_BASE}/pornhub/search?key=${query}`) : `${API_BASE}/pornhub/search?key=${query}`;
+          const res = await fetch(url);
+          const data = await res.json();
 
-        if (videos.length === 0) {
-          hasil.innerHTML = "<p class='text-center py-10 text-yellow-400'>Tidak ada video. Coba kata lain.</p>";
-          return;
-        }
+          let videos = data.data?.videos || data.videos || [];
 
-        let html = "";
-        videos.forEach(v => {
-          html += `
-            <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-2xl overflow-hidden">
-              <img src="${v.image || v.thumbnail}" class="w-full h-44 object-cover">
-              <div class="p-3 text-sm">${v.title}</div>
-            </div>`;
-        });
-        hasil.innerHTML = html;
-      } catch(e) {
-        hasil.innerHTML = "<p class='text-center py-10 text-red-400'>Gagal memuat</p>";
+          if (videos.length > 0) {
+            let html = '';
+            videos.forEach(v => {
+              html += `
+                <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
+                  <img src="${v.image || v.thumbnail}" class="w-full aspect-video object-cover">
+                  <div class="p-3">
+                    <p class="text-sm line-clamp-2">${v.title}</p>
+                  </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            return;
+          }
+        } catch (e) {}
       }
+
+      container.innerHTML = `<p class="col-span-full text-center py-12 text-yellow-400">Tidak ada video.<br>Coba kata lain atau klik Refresh</p>`;
     }
 
-    document.getElementById('search').addEventListener('keypress', e => {
-      if (e.key === "Enter") load(e.target.value || "indo");
+    document.getElementById('searchInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') loadVideos(e.target.value.trim() || "indo");
     });
 
-    window.onload = () => load("indo");
+    window.onload = () => loadVideos("indo");
   </script>
 </body>
 </html>
