@@ -16,34 +16,35 @@
 
   <div class="flex justify-between mb-4">
     <h2 class="text-xl font-semibold">🔥 Trending Video</h2>
-    <button onclick="loadVideos()" class="text-pink-500">↻ Refresh</button>
+    <button onclick="loadVideos()" class="text-pink-500 font-medium">↻ Refresh</button>
   </div>
 
   <div id="results" class="grid grid-cols-2 gap-4"></div>
 
-  <footer class="text-center mt-10 text-zinc-500 text-xs">
+  <footer class="text-center mt-12 text-zinc-500 text-xs">
     Powered by Lustpress • MultiTube 2026
   </footer>
 
   <script>
-    const API = "https://multitube-api.onrender.com";
+    const API_BASE = "https://multitube-api.onrender.com";
+    const PROXY = "https://corsproxy.io/?";
 
     async function loadVideos(query = "indo") {
       const container = document.getElementById('results');
-      container.innerHTML = "<p class='text-center py-10'>Memuat video...</p>";
+      container.innerHTML = `<p class="col-span-full text-center py-12">Memuat video...</p>`;
 
       try {
-        const res = await fetch(`${API}/pornhub/search?key=${query}`);
+        const res = await fetch(PROXY + encodeURIComponent(`${API_BASE}/pornhub/search?key=${query}`));
         const data = await res.json();
 
         let videos = data.data?.videos || data.videos || [];
 
         if (videos.length === 0) {
-          container.innerHTML = "<p class='text-center py-10 text-yellow-400'>Tidak ada video.<br>Coba kata lain atau klik Refresh</p>";
+          container.innerHTML = `<p class="col-span-full text-center py-12 text-yellow-400">Tidak ada video.<br>Coba kata lain atau klik Refresh</p>`;
           return;
         }
 
-        let html = "";
+        let html = '';
         videos.forEach(v => {
           html += `
             <div onclick="window.open('${v.link || v.url}', '_blank')" class="bg-zinc-900 rounded-xl overflow-hidden cursor-pointer">
@@ -55,12 +56,12 @@
         });
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = "<p class='text-center py-10 text-red-400'>Server sedang tidur.<br>Klik Refresh beberapa kali</p>";
+        container.innerHTML = `<p class="col-span-full text-center py-12 text-red-400">Gagal memuat.<br>Klik Refresh beberapa kali</p>`;
       }
     }
 
     document.getElementById('searchInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') loadVideos(e.target.value || "indo");
+      if (e.key === 'Enter') loadVideos(e.target.value.trim() || "indo");
     });
 
     window.onload = () => loadVideos("indo");
